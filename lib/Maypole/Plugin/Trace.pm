@@ -11,7 +11,7 @@ use Scalar::Util();
 
 use base 'Class::Data::Inheritable';
 
-our $VERSION = '0.01';
+our $VERSION = '0.1';
 
 # default to the most useful level
 __PACKAGE__->mk_classdata(trace_level => 2);
@@ -394,12 +394,12 @@ sub __process {
     # self-traceing versions - see trace methods in Maypole.pm
     # The '1' indicates the method is exported.
     my $trace_level = $r->trace_level if $r->can('trace_level');
-    Maypole::Plugin::Trace::__trace_entry(1, $trace_level, $class, $method, $r, $obj, @{ $r->{args} } )
+    Maypole::Plugin::Trace::__trace_entry(1, $trace_level, $r->only_trace_exported, $r->trace_path, $class, $method, $r, $obj, @{ $r->args } )
         if $trace_level;
         
     $class->$method( $r, $obj, @{ $r->{args} } );
     
-    Maypole::Plugin::Trace::__trace_exit($trace_level, $class, $method, $r, $obj, @{ $r->{args} } )
+    Maypole::Plugin::Trace::__trace_exit($trace_level, $r->only_trace_exported, $r->trace_path, $class, $method, $r, $obj, @{ $r->args } )
         if $trace_level;
     
     return; # previously, would implicitly return whatever the $method call 
